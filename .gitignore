@@ -1,5 +1,9 @@
 /.idea
+/build
 /out
-/Main.java
-/LogicaControleLinguica
-/EntradaInvalidaException.java
+EntradaInvalidaException.java
+Estoque.java
+*.md
+Main.java
+*.txt
+*.class

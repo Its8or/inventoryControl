@@ -1,5 +1,5 @@
 public class Main {
     public static void main(String[] args) {
-        Aplicativo.App();
+        Application.App();
     }
 }
