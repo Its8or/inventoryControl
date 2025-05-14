@@ -1,9 +1,9 @@
+/.class
 /.idea
 /build
 /out
-EntradaInvalidaException.java
+ControleLinguica.jar
+estoque.dat
 Estoque.java
-*.md
 Main.java
 *.txt
-*.class

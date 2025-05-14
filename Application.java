@@ -1,17 +1,55 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 public class Application {
+    private static final String CACHE_FILE = "estoque.dat";
+
+    private static void saveEstoque(int value) {
+        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(CACHE_FILE))) {
+            out.writeInt(value);
+            System.out.println("Estoque salvo: " + value);
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar estoque: " + e.getMessage());
+        }
+    }
+
+    private static int loadEstoque() {
+        int value = 0;
+        File file = new File(CACHE_FILE);
+
+        if (file.exists()) {
+            try (DataInputStream in = new DataInputStream(new FileInputStream(CACHE_FILE))) {
+                value = in.readInt();
+                System.out.println("Estoque carregado: " + value);
+            } catch (IOException e) {
+                System.err.println("Erro ao carregar estoque: " + e.getMessage());
+            }
+        }
+
+        return value;
+    }
+
     public static void App() {
         System.out.println("Iniciando...");
-        EstoqueControls estoqueControls = new EstoqueControls(0);
+        int initialEstoque = loadEstoque();
+        EstoqueControls estoqueControls = new EstoqueControls(initialEstoque);
 
         JFrame frame = new JFrame();
         frame.setSize(400, 200);
         frame.setTitle("Linguiça do Netão");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridLayout(3, 3,10, 10)); // 3 linhas, 3 colunas, com espaçamento
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new GridLayout(3, 3, 10, 10)); // 3 linhas, 3 colunas, com espaçamento
+
+        // Add window listener to save estoque value when closing
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                saveEstoque(estoqueControls.getEstoque());
+                System.exit(0);
+            }
+        });
 
         JButton addEstoqueBtn = new JButton("Adicionar");
         JButton remEstoqueBtn = new JButton("Retirar");
@@ -24,9 +62,9 @@ public class Application {
         addEstoqueBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                int amount = Integer.parseInt(fieldAddEstoque.getText());
-                estoqueControls.adicionarEstoque(amount);
-                labelEstoqueAtual.setText("Estoque Atual: " + estoqueControls.getEstoque());
+                    int amount = Integer.parseInt(fieldAddEstoque.getText());
+                    estoqueControls.adicionarEstoque(amount);
+                    labelEstoqueAtual.setText("Estoque Atual: " + estoqueControls.getEstoque());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, ex.getMessage());
                 }
@@ -42,6 +80,19 @@ public class Application {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, ex.getMessage());
                 }
+            }
+        });
+
+        // Add action listeners to text fields to respond to Enter key
+        fieldAddEstoque.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addEstoqueBtn.doClick(); // Simulate button click
+            }
+        });
+
+        fieldRemEstoque.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                remEstoqueBtn.doClick(); // Simulate button click
             }
         });
 
